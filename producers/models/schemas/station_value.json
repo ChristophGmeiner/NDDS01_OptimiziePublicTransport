@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "station_value",
+  "fields": [
+      {"name": "station_id", "type": "int"},
+      {"name": "station_name", "type": "string"},
+      {"name": "color", "type": "string"},
+      {"name": "direction_a", "type": "string"},
+      {"name": "direction_b", "type": "string"}
+  ]
+}

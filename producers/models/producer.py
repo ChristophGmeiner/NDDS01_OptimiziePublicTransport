@@ -23,6 +23,7 @@ class Producer:
         value_schema=None,
         num_partitions=1,
         num_replicas=1,
+        broker_properties=None
     ):
         """Initializes a Producer object with basic settings"""
         self.topic_name = topic_name
@@ -34,12 +35,12 @@ class Producer:
         #
         #
         # TODO: Configure the broker properties below. Make sure to reference the project README
-        # and use the Host URL for Kafka and Schema Registry!
+        # and use the Host URL for Kafka and Schema Registry! done
         #
         #
         self.broker_properties = {
-            # TODO
-            # TODO
+            'bootstrap.servers'='localhost:9092'
+            'client.id': 'prod01'
             # TODO
         }
 
@@ -48,18 +49,31 @@ class Producer:
             self.create_topic()
             Producer.existing_topics.add(self.topic_name)
 
-        # TODO: Configure the AvroProducer
-        # self.producer = AvroProducer(
-        # )
+        # TODO: Configure the AvroProducer done
+        self.producer = AvroProducer(
+            {"bootstrap.servers": self.broker_properties["bootstrap.servers"]},
+            schema_registry=self.value_schema
+        )
 
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
-        #
-        #
         # TODO: Write code that creates the topic for this producer if it does not already exist on
-        # the Kafka Broker.
-        #
-        #
+        # the Kafka Broker. done
+        
+        client = AdminClient({"bootstrap.servers": self.broker_properties["bootstrap.servers"]})
+        futures = client.create_topic(
+            [NewTopic(topic=self.topic_name, 
+                     num_partitions=self.num_partitions,
+                     replication_factor=self.replication_factor)]
+        )
+            
+        for _, future in futures.items():
+            try:
+                future.result()
+            except Exception as e:
+                pass
+        
+            
         logger.info("topic creation kafka integration incomplete - skipping")
 
     def time_millis(self):
@@ -70,6 +84,10 @@ class Producer:
         #
         #
         # TODO: Write cleanup code for the Producer here
+        
+        self.producer.produce(
+            topic=self.topic_name,
+            value=asdict())
         #
         #
         logger.info("producer close incomplete - skipping")

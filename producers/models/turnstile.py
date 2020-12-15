@@ -15,11 +15,11 @@ class Turnstile(Producer):
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/turnstile_key.json")
 
     #
-    # TODO: Define this value schema in `schemas/turnstile_value.json, then uncomment the below
+    # TODO: Define this value schema in `schemas/turnstile_value.json, then uncomment the below, done
     #
-    #value_schema = avro.load(
-    #    f"{Path(__file__).parents[0]}/schemas/turnstile_value.json"
-    #)
+    value_schema = avro.load(
+        f"{Path(__file__).parents[0]}/schemas/turnstile_value.json"
+    )
 
     def __init__(self, station):
         """Create the Turnstile"""
@@ -38,11 +38,11 @@ class Turnstile(Producer):
         #
         #
         super().__init__(
-            f"{station_name}", # TODO: Come up with a better topic name
+            f"{station_name}_turnstile", # TODO: Come up with a better topic name, done
             key_schema=Turnstile.key_schema,
-            # TODO: value_schema=Turnstile.value_schema, TODO: Uncomment once schema is defined
-            # TODO: num_partitions=???,
-            # TODO: num_replicas=???,
+            value_schema=Turnstile.value_schema
+            num_partitions=3,
+            num_replicas=1,
         )
         self.station = station
         self.turnstile_hardware = TurnstileHardware(station)
@@ -57,3 +57,7 @@ class Turnstile(Producer):
         # of entries that were calculated
         #
         #
+        self.producer.produce(
+            topic=f"{station_name}_turnstile",
+            key={"timestamp": self.time_milles()},
+            value={}

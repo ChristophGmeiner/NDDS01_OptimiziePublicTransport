@@ -17,9 +17,9 @@ class Station(Producer):
     key_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_key.json")
 
     #
-    # TODO: Define this value schema in `schemas/station_value.json, then uncomment the below
+    # TODO: Define this value schema in `schemas/station_value.json, then uncomment the below, done
     #
-    #value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_value.json")
+    value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_value.json")
 
     def __init__(self, station_id, name, color, direction_a=None, direction_b=None):
         self.name = name
@@ -34,16 +34,16 @@ class Station(Producer):
         #
         #
         # TODO: Complete the below by deciding on a topic name, number of partitions, and number of
-        # replicas
+        # replicas, done
         #
         #
-        topic_name = f"{station_name}" # TODO: Come up with a better topic name
+        topic_name = f"{station_name}_topic " # TODO: Come up with a better topic name, done
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
-            # TODO: value_schema=Station.value_schema, # TODO: Uncomment once schema is defined
-            # TODO: num_partitions=???,
-            # TODO: num_replicas=???,
+            value_schema=Station.value_schema, # TODO: Uncomment once schema is defined, done
+            num_partitions=5,
+            num_replicas=1,
         )
 
         self.station_id = int(station_id)
@@ -63,17 +63,13 @@ class Station(Producer):
         #
         #
         logger.info("arrival kafka integration incomplete - skipping")
-        #self.producer.produce(
-        #    topic=self.topic_name,
-        #    key={"timestamp": self.time_millis()},
-        #    value={
-        #        #
-        #        #
-        #        # TODO: Configure this
-        #        #
-        #        #
-        #    },
-        #)
+        self.producer.produce(
+            topic=self.topic_name,
+            key={"timestamp": self.time_millis()},
+            value={
+                  avro.load(f"{Path(__file__).parents[0]}/schemas/station_value.json")
+            },
+        )
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(
