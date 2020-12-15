@@ -30,13 +30,9 @@ class Turnstile(Producer):
             .replace("-", "_")
             .replace("'", "")
         )
-
-        #
-        #
         # TODO: Complete the below by deciding on a topic name, number of partitions, and number of
         # replicas
-        #
-        #
+        
         super().__init__(
             f"{station_name}_turnstile", # TODO: Come up with a better topic name, done
             key_schema=Turnstile.key_schema,
@@ -50,14 +46,14 @@ class Turnstile(Producer):
     def run(self, timestamp, time_step):
         """Simulates riders entering through the turnstile."""
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
-        logger.info("turnstile kafka integration incomplete - skipping")
-        #
-        #
+
         # TODO: Complete this function by emitting a message to the turnstile topic for the number
         # of entries that were calculated
-        #
-        #
-        self.producer.produce(
-            topic=f"{station_name}_turnstile",
-            key={"timestamp": self.time_milles()},
-            value={}
+        try:
+            self.producer.produce(
+                topic=f"{station_name}_turnstile",
+                key={"timestamp": self.time_milles()},
+                value=asdict(self.turnstile_hardware), #stationid and name from HW class, but line?
+                value_schema=value_schema)
+        except:
+            logger.info("turnstile kafka integration incomplete - skipping")

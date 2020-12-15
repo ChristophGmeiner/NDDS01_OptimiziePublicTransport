@@ -39,7 +39,7 @@ class Producer:
         #
         #
         self.broker_properties = {
-            'bootstrap.servers'='localhost:9092'
+            'bootstrap.servers': 'localhost:9092',
             'client.id': 'prod01'
             # TODO
         }
@@ -81,16 +81,12 @@ class Producer:
 
     def close(self):
         """Prepares the producer for exit by cleaning up the producer"""
-        #
-        #
         # TODO: Write cleanup code for the Producer here
         
-        self.producer.produce(
-            topic=self.topic_name,
-            value=asdict())
-        #
-        #
-        logger.info("producer close incomplete - skipping")
+        try:
+            self.producer.flush()
+        except:
+            logger.info("producer close incomplete - skipping")
 
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""

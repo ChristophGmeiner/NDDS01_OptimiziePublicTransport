@@ -31,12 +31,8 @@ class Station(Producer):
             .replace("'", "")
         )
 
-        #
-        #
         # TODO: Complete the below by deciding on a topic name, number of partitions, and number of
-        # replicas, done
-        #
-        #
+
         topic_name = f"{station_name}_topic " # TODO: Come up with a better topic name, done
         super().__init__(
             topic_name,
@@ -57,19 +53,19 @@ class Station(Producer):
 
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
-        #
-        #
         # TODO: Complete this function by producing an arrival message to Kafka
-        #
-        #
-        logger.info("arrival kafka integration incomplete - skipping")
-        self.producer.produce(
-            topic=self.topic_name,
-            key={"timestamp": self.time_millis()},
-            value={
-                  avro.load(f"{Path(__file__).parents[0]}/schemas/station_value.json")
-            },
-        )
+
+        try:
+            self.producer.produce(
+                topic=self.topic_name,
+                key={"timestamp": self.time_millis()},
+                value=(),
+                value_schema={
+                      avro.load(f"{Path(__file__).parents[0]}/schemas/station_value.json")
+                },
+            )
+        except:
+            logger.info("arrival kafka integration incomplete - skipping")                
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(
