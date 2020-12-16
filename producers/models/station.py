@@ -53,13 +53,19 @@ class Station(Producer):
 
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
-        # TODO: Complete this function by producing an arrival message to Kafka
+        # TODO: Complete this function by producing an arrival message to Kafka, done
 
         try:
             self.producer.produce(
                 topic=self.topic_name,
                 key={"timestamp": self.time_millis()},
-                value=(),
+                value={
+                    "station_id": self.station_id,
+                    "station_name": self.station_name,
+                    "color": self.color,
+                    "direction_a": self.direction_a,
+                    "direction_b": self.direction_b
+                },
                 value_schema={
                       avro.load(f"{Path(__file__).parents[0]}/schemas/station_value.json")
                 },

@@ -48,12 +48,16 @@ class Turnstile(Producer):
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
 
         # TODO: Complete this function by emitting a message to the turnstile topic for the number
-        # of entries that were calculated
+        # of entries that were calculated, done
         try:
             self.producer.produce(
                 topic=f"{station_name}_turnstile",
                 key={"timestamp": self.time_milles()},
-                value=asdict(self.turnstile_hardware), #stationid and name from HW class, but line?
+                value={
+                    "station_id": station.station_id,
+                    "station_name": station.station_name,
+                    "line": station.color
+                }, #stationid and name from HW class, but line?, done
                 value_schema=value_schema)
         except:
             logger.info("turnstile kafka integration incomplete - skipping")
