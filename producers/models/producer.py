@@ -24,8 +24,7 @@ class Producer:
         key_schema,
         value_schema=None,
         num_partitions=1,
-        num_replicas=1,
-        broker_properties=None
+        num_replicas=1
     ):
         """Initializes a Producer object with basic settings"""
         self.topic_name = topic_name
@@ -58,23 +57,35 @@ class Producer:
             default_value_schema=self.value_schema
         )
 
+    self.client = AdminClient({
+        "bootstrap.servers": self.broker_properties["bootstrap.servers"]
+    })
+        
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
         # TODO: Write code that creates the topic for this producer if it does not already exist on
         # the Kafka Broker. done
         
-        client = AdminClient({"bootstrap.servers": self.broker_properties["bootstrap.servers"]})
-        futures = client.create_topics(
-            [NewTopic(topic=self.topic_name, 
-                     num_partitions=self.num_partitions,
-                     replication_factor=self.num_replicas)]
-        )
+        cl = client.list_topics()
+        cl = cl.topics()
+        
+        if self.topic_name in cl.keys():
+            logger.info(f"topic exists: {self.topic_name}")
+        
+        else:
             
-        for _, future in futures.items():
-            try:
-                future.result()
-            except Exception as e:
-                logger.info("topic creation kafka integration incomplete - skipping")
+            futures = self.client.create_topics(
+                [NewTopic(topic=self.topic_name, 
+                         num_partitions=self.num_partitions,
+                         replication_factor=self.num_replicas)]
+            )
+
+            for _, future in futures.items():
+                try:
+                    future.result()
+                    logger.info(f"{self.topic_name} created!")
+                except Exception as e:
+                    logger.info(f"Creation of {self.topic_name} failed!")
         
             
         
@@ -89,7 +100,7 @@ class Producer:
         try:
             self.producer.flush()
         except:
-            logger.info("producer close incomplete - skipping")
+            logger.info("producer close failed!")
 
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""

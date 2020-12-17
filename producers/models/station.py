@@ -33,12 +33,12 @@ class Station(Producer):
 
         # TODO: Complete the below by deciding on a topic name, number of partitions, and number of
 
-        topic_name = f"{station_name}_topic " # TODO: Come up with a better topic name, done
+        topic_name = "station_topic" # TODO: Come up with a better topic name, done
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
             value_schema=Station.value_schema, # TODO: Uncomment once schema is defined, done
-            num_partitions=5,
+            num_partitions=1,
             num_replicas=1,
         )
 
@@ -56,19 +56,19 @@ class Station(Producer):
         # TODO: Complete this function by producing an arrival message to Kafka, done
 
         try:
+            logger.info(f"{self.topic_name}: train {train.train_id} arrived from direction {direction} and prev_direction {prev_direction} and prev_station_id {prev_station_id} ")
             self.producer.produce(
                 topic=self.topic_name,
                 key={"timestamp": self.time_millis()},
-                value={
-                    "station_id": self.station_id,
-                    "station_name": self.station_name,
-                    "color": self.color,
-                    "direction_a": self.direction_a,
-                    "direction_b": self.direction_b
-                },
-                value_schema={
-                      avro.load(f"{Path(__file__).parents[0]}/schemas/station_value.json")
-                },
+                value={"station_id":self.station_id,
+                  "train_id":train.train_id,
+                  "direction":direction,
+                  "line":self.color.name,
+                  "train_status":train.status.name,
+                  "prev_station_id":prev_station_id,
+                  "prev_direction":prev_direction,
+           },
+                value_schema=Station.value_schema,
             )
         except:
             logger.info("arrival kafka integration incomplete - skipping")                

@@ -34,10 +34,10 @@ class Turnstile(Producer):
         # replicas
         
         super().__init__(
-            f"{station_name}_turnstile", # TODO: Come up with a better topic name, done
+            "turnstiles_topic", # TODO: Come up with a better topic name, done
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
-            num_partitions=3,
+            num_partitions=1,
             num_replicas=1,
         )
         self.station = station
@@ -46,18 +46,23 @@ class Turnstile(Producer):
     def run(self, timestamp, time_step):
         """Simulates riders entering through the turnstile."""
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
+        logger.info(f"{self.topic_name} : turnstile at station {self.station.station_id} turned for {num_entries} times at {timestamp}")
+
 
         # TODO: Complete this function by emitting a message to the turnstile topic for the number
         # of entries that were calculated, done
         try:
-            self.producer.produce(
-                topic=f"{station_name}_turnstile",
-                key={"timestamp": self.time_milles()},
-                value={
-                    "station_id": station.station_id,
-                    "station_name": station.station_name,
-                    "line": station.color
-                }, #stationid and name from HW class, but line?, done
-                value_schema=value_schema)
+            
+            for _ in range(num_entries):
+            
+                self.producer.produce(
+                    topic=f"{station_name}_turnstile",
+                    key={"timestamp": self.time_milles()},
+                    value={
+                        "station_id": self.station.station_id,
+                        "station_name": self.station.station_name,
+                        "line": self.station.color
+                    }, #stationid and name from HW class, but line?, done
+                    value_schema=Turnstile.value_schema)
         except:
             logger.info("turnstile kafka integration incomplete - skipping")
