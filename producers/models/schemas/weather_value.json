@@ -2,7 +2,7 @@
   "type": "records",
   "name": "weather_value",
   "fields": [
-      {"name": "temperature", "type": "float"},
+      {"name": "temperature", "type": "string"},
       {"name": "status", "type": "string"}
   ]
 }

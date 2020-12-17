@@ -57,39 +57,28 @@ class Producer:
             default_value_schema=self.value_schema
         )
 
-    self.client = AdminClient({
-        "bootstrap.servers": self.broker_properties["bootstrap.servers"]
-    })
-        
     def create_topic(self):
+        
         """Creates the producer topic if it does not already exist"""
         # TODO: Write code that creates the topic for this producer if it does not already exist on
         # the Kafka Broker. done
         
-        cl = client.list_topics()
-        cl = cl.topics()
-        
-        if self.topic_name in cl.keys():
-            logger.info(f"topic exists: {self.topic_name}")
-        
-        else:
+        self.client = AdminClient({
+            "bootstrap.servers": self.broker_properties["bootstrap.servers"]
+        })
             
-            futures = self.client.create_topics(
-                [NewTopic(topic=self.topic_name, 
-                         num_partitions=self.num_partitions,
-                         replication_factor=self.num_replicas)]
-            )
+        futures = self.client.create_topics(
+             [NewTopic(topic=self.topic_name, 
+                       num_partitions=self.num_partitions,
+                       replication_factor=self.num_replicas)])
 
-            for _, future in futures.items():
-                try:
-                    future.result()
-                    logger.info(f"{self.topic_name} created!")
-                except Exception as e:
-                    logger.info(f"Creation of {self.topic_name} failed!")
+        for _, future in futures.items():
+            try:
+                future.result()
+                logger.info(f"{self.topic_name} created!")
+            except Exception as e:
+                logger.info(f"Creation of {self.topic_name} failed!")
         
-            
-        
-
     def time_millis(self):
         return int(round(time.time() * 1000))
 

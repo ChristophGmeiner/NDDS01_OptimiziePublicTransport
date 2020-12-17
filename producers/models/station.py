@@ -55,23 +55,36 @@ class Station(Producer):
         """Simulates train arrivals at this station"""
         # TODO: Complete this function by producing an arrival message to Kafka, done
        
-    logger.info(f"{self.topic_name}: train {train.train_id} arrived from direction \
-        {direction} and prev_direction {prev_direction} \
-        and prev_station_id {prev_station_id} ")
-    
-    self.producer.produce(
-        topic=self.topic_name,
-        key={"timestamp": self.time_millis()},
-        value={"station_id":self.station_id,
-               "train_id":train.train_id,
-               "direction":direction,
-               "line":self.color.name,
-               "train_status":train.status.name,
-               "prev_station_id":prev_station_id,
-               "prev_direction":prev_direction,
-              },
-        value_schema=Station.value_schema,
-    )
+        logger.info(f"{self.topic_name}: train {train.train_id} arrived from direction \
+            {direction} and prev_direction {prev_direction} \
+            and prev_station_id {prev_station_id} ")
+        
+        #print(f"station_id: {self.station_id}")
+        #print(f"trainid: {train.train_id}")
+        #print(f"dir: {direction}")
+        #print(f"colorname: {self.color.name}")
+        #print(f"statusname: {train.status.name}")
+        #print(f"prevstid: {prev_station_id}")
+        #print(f"prevdir: {prev_direction}")
+              
+        if not prev_station_id:
+            prev_station_id = 0
+            
+        if not prev_direction:
+            prev_direction = 'None'
+
+        self.producer.produce(
+            topic=self.topic_name,
+            key={"timestamp": self.time_millis()},
+            value={"station_id":self.station_id,
+                   "train_id":train.train_id,
+                   "direction":direction,
+                   "line":self.color.name,
+                   "train_status":train.status.name,
+                   "prev_station_id":prev_station_id,
+                   "prev_direction":prev_direction,
+                  }
+        )
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(
