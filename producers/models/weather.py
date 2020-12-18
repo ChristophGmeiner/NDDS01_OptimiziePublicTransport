@@ -35,7 +35,7 @@ class Weather(Producer):
         # replicas, done
 
         super().__init__(
-            "weather", # TODO: Come up with a better topic name
+            f"weather_{month}", # TODO: Come up with a better topic name
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
             num_partitions=3,
@@ -84,7 +84,7 @@ class Weather(Producer):
         #    # TODO: What URL should be POSTed to?
         #    #
         #    #
-           f"{Weather.rest_proxy_url}/topics/weather",
+           f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
         #    #
         #    #
         #    # TODO: What Headers need to bet set?
@@ -93,13 +93,16 @@ class Weather(Producer):
             headers={"Content-Type": "application/vnd.kafka.json.v2+json"},
             data=json.dumps(
                 {
-                     "value_schema": Weather.value_schema,
-                     "records": [{"value": {
-                         "temperature": self.temp,
-                         "status": self.status}}]
+                     "key_schema": json.dumps(Weather.key_schema),
+                     "value_schema": json.dumps(Weather.value_schema),
+                     "records": [
+                         {"key": self.time_millis()},
+                         {"value": {
+                             "temperature": self.temp,
+                             "status": self.status.name}}]
                     # TODO: Provide key schema, value schema, and records
                 }
-            ),
+            )
         )
         
         try:
