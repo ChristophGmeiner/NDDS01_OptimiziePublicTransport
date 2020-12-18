@@ -54,15 +54,19 @@ class Turnstile(Producer):
         try:
             
             for _ in range(num_entries):
+                
+                #print(f"Produced entry with {self.station.station_id}, \
+                #    {self.station.name} and {self.station.color.name}")
             
                 self.producer.produce(
-                    topic=f"{station_name}_turnstile",
-                    key={"timestamp": self.time_milles()},
+                    topic="turnstiles_topic",
+                    key={"timestamp": self.time_millis()},
                     value={
                         "station_id": self.station.station_id,
-                        "station_name": self.station.station_name,
-                        "line": self.station.color
+                        "station_name": self.station.name,
+                        "line": self.station.color.name
                     }, #stationid and name from HW class, but line?, done
                     value_schema=Turnstile.value_schema)
-        except:
-            logger.info("turnstile kafka integration incomplete - skipping")
+        except Exception as e:
+            logger.info(f"turnstile kafka integration incomplete - skipping \
+                         with Error: {e}")
