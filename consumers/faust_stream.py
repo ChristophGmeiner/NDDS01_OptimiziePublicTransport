@@ -67,10 +67,10 @@ async def transform_station(stations):
                 station.order,
                 line)
         transtable[station.station_name] = ts
-        print({"station_id": station.station_id, 
-              "station_name": station.station_name, 
-              "statio_order": station.order,
-              "line": line})
+        #print({"station_id": station.station_id, 
+        #      "station_name": station.station_name, 
+        #      "station_order": station.order,
+        #      "line": line})
 
 if __name__ == "__main__":
     app.main()
