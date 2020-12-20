@@ -36,8 +36,11 @@ class KafkaConsumer:
 
         self.broker_properties = {
             'bootstrap.servers': BROKER_URL,
-            'group_id': '0'
+            'group.id': '0'
         }
+        
+        #if self.offset_earliest:
+        #    self.broker_properties["auto.offset.reset"] = "earliest"
 
         # TODO: Create the Consumer, using the appropriate type.done
         if is_avro is True:
@@ -52,17 +55,17 @@ class KafkaConsumer:
         # how the `on_assign` callback should be invoked., done
 
         self.consumer.subscribe(
-            [self.topic_name_pattern],
-            on_assign=self.on_assign)
+            [self.topic_name_pattern]) #,
+            #on_assign=self.on_assign)
 
     def on_assign(self, consumer, partitions):
         """Callback for when topic assignment takes place"""
         # TODO: If the topic is configured to use `offset_earliest` set the partition offset to
         # the beginning or earliest
-        logger.info("on_assign is incomplete - skipping")
+        
         for partition in partitions:
             if self.offset_earliest:
-                partition.offset = OFFSET_EARLIEST
+                partition.offset = 'earliest'
            
 
         logger.info("partitions assigned for %s", self.topic_name_pattern)
@@ -92,7 +95,7 @@ class KafkaConsumer:
             logger.info(f"Error when receiving message {m.error()}")
             return 1
         else:
-            logger.info(f"Following message was received succesfully: {m.key()}, {m.value()}")
+            logger.info(f"Following {m.topic()} message was received succesfully: {m.key()}, {m.value()}")
             self.message_handler(m)
             return 1
 
