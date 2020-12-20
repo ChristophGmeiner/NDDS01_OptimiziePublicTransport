@@ -33,7 +33,7 @@ class Station(Producer):
 
         # TODO: Complete the below by deciding on a topic name, number of partitions, and number of
 
-        topic_name = "station_topic" # TODO: Come up with a better topic name, done
+        topic_name = f"station_topic_{station_name}_{color.name}" # TODO: Come up with a better topic name, done
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,

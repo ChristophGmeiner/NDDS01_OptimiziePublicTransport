@@ -34,7 +34,7 @@ class Turnstile(Producer):
         # replicas
         
         super().__init__(
-            "turnstiles_topic", # TODO: Come up with a better topic name, done
+            f"turnstiles_topic_{station_name}", # TODO: Come up with a better topic name, done
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
             num_partitions=1,
