@@ -1,9 +1,11 @@
 """Contains functionality related to Lines"""
 import json
 import logging
+import re
 
 from models import Station
 
+statpattern = re.compile("^station_.")
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +65,7 @@ class Line:
                 self._handle_station(value)
             except Exception as e:
                 logger.fatal("bad station? %s, %s", value, e)
-        elif "^station_.*" in message.topic(): # Set the conditional to the arrival topic, done
+        elif statpattern.match(message.topic()): # Set the conditional to the arrival topic, done
             self._handle_arrival(message)
         elif "TURNSTILE_SUMMARY" in message.topic: # Set the conditional to the KSQL Turnstile Summary Topic, done
             json_data = json.loads(message.value())
