@@ -36,7 +36,7 @@ class KafkaConsumer:
 
         self.broker_properties = {
             'bootstrap.servers': BROKER_URL,
-            'group.id': '0'
+            'group.id': self.topic_name_pattern
         }
         
         #if self.offset_earliest:
@@ -65,7 +65,7 @@ class KafkaConsumer:
         
         for partition in partitions:
             if self.offset_earliest:
-                partition.offset = 'earliest'
+                partition.offset = confluent_kafka.OFFSET_BEGINNING
            
 
         logger.info("partitions assigned for %s", self.topic_name_pattern)
@@ -86,7 +86,7 @@ class KafkaConsumer:
         # Additionally, make sure you return 1 when a message is processed, and 0 when no message
         # is retrieved. done
         
-        m = self.consumer.poll(self.consume_timeout)
+        m = self.consumer.poll(1.0)
         
         if not m:
             logger.info("No message received!")
