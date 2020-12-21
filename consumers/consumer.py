@@ -95,7 +95,7 @@ class KafkaConsumer:
             logger.info(f"Error for {m.topic()} when receiving message {m.error()}")
             return 1
         else:
-            logger.info(f"Following {m.topic()} message was received succesfully: {m.key()}, {m.value()}")
+            #logger.info(f"Following {m.topic()} message was received succesfully: {m.key()}, {m.value()}")
             self.message_handler(m)
             return 1
 

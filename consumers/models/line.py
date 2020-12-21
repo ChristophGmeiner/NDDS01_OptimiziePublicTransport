@@ -60,10 +60,12 @@ class Line:
             try:
                 value = json.loads(message.value())
                 self._handle_station(value)
+                logger.info(f"Message process for {message.topic} succesfull")                
             except Exception as e:
                 logger.fatal("bad station? %s, %s", value, e)
         elif "station_topic" in message.topic(): # Set the conditional to the arrival topic, done
             self._handle_arrival(message)
+            logger.info(f"Message process for {message.topic} succesfull")
         elif "TURNSTILE_SUMMARY" == message.topic(): # Set the conditional to the KSQL Turnstile Summary Topic, done
             json_data = json.loads(message.value())
             station_id = json_data.get("STATION_ID")
@@ -72,6 +74,7 @@ class Line:
                 logger.debug("unable to handle message due to missing station")
                 return
             station.process_message(json_data)
+            logger.info(f"Message process for {message.topic} succesfull")
         else:
             logger.debug(
                 "unable to find handler for message from topic %s", message.topic
