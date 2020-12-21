@@ -58,6 +58,9 @@ class Line:
 
     def process_message(self, message):
         """Given a kafka message, extract data"""
+        
+        logger.info(f"Message for {message.topic()}")
+        
         # TODO: Based on the message topic, call the appropriate handler.
         if "SQL_stations_transformed" in message.topic(): # Set the conditional correctly to the stations Faust Table, done
             try:
