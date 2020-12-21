@@ -19,7 +19,10 @@ class Lines:
 
     def process_message(self, message):
         """Processes a station message"""
-        if "SQL_stations_transformed" in message.topic():
+        
+        logger.info(f"lines message process started for {message.topic()}")
+        
+        if "station_topic" in message.topic():
             value = message.value()
             if message.topic() == "SQL_stations_transformed":
                 value = json.loads(value)
