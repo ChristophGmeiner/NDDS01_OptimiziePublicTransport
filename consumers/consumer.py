@@ -39,8 +39,8 @@ class KafkaConsumer:
             'group.id': self.topic_name_pattern
         }
         
-        #if self.offset_earliest:
-        #    self.broker_properties["auto.offset.reset"] = "earliest"
+        if self.offset_earliest:
+            self.broker_properties["auto.offset.reset"] = "earliest"
 
         # TODO: Create the Consumer, using the appropriate type.done
         if is_avro is True:
