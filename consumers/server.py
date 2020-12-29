@@ -65,7 +65,7 @@ def run_server():
         KafkaConsumer(
             "^weather.*",
             weather_model.process_message,
-            offset_earliest=True,
+            offset_earliest=False,
         ),
         KafkaConsumer(
             "SQL_stations_transformed",
@@ -76,12 +76,12 @@ def run_server():
         KafkaConsumer(
             "^station_topic.*",
             lines.process_message,
-            offset_earliest=True,
+            offset_earliest=False,
         ),
         KafkaConsumer(
             "TURNSTILE_SUMMARY",
             lines.process_message,
-            offset_earliest=True,
+            offset_earliest=False,
             is_avro=False,
         ),
     ]
